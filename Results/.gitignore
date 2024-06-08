@@ -1,0 +1,26 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+pnp/
+.pnp/
+.pnp.js
+
+#.env
+.env
+
+# Testing
+/coverage
+
+# Production
+/build
+
+# Logs
+/logs
+
+# OS generated files
+.DS_Store
+Thumbs.db
