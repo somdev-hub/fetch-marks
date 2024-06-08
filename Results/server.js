@@ -51,13 +51,13 @@ bot.onText(/\/studentinfo (.+)/, async (msg, match) => {
   } else if (!roll.match(/^[0-9]+$/)) {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
   }
-  console.log(roll);
+//   console.log(roll);
   try {
     const response = await axios.post(
       `https://results.bput.ac.in/student-detsils-results?rollNo=${roll}`
     );
 
-    console.log(response.data);
+    // console.log(response.data);
 
     if (response.data) {
       const data = response.data;
@@ -88,13 +88,13 @@ bot.onText(/\/subjects (.+)/, async (msg, match) => {
   } else if (!roll.match(/^[0-9]+$/)) {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
   }
-  console.log(roll);
+//   console.log(roll);
   try {
     const response = await axios.post(
       `https://results.bput.ac.in/student-results-subjects-list?semid=6&rollNo=${roll}&session=Even%20(2023-24)`
     );
 
-    console.log(response.data);
+    // console.log(response.data);
 
     if (response.data) {
       const data = response.data;
@@ -118,7 +118,7 @@ bot.onText(/\/marks (.+)/, async (msg, match) => {
   } else if (!roll.match(/^[0-9]+$/)) {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
   }
-  console.log(roll);
+//   console.log(roll);
   try {
     const response = await axios.post(
       `https://results.bput.ac.in/student-results-subjects-list?semid=6&rollNo=${roll}&session=Even%20(2023-24)`
@@ -136,7 +136,7 @@ bot.onText(/\/marks (.+)/, async (msg, match) => {
       bot.sendMessage(msg.chat.id, "No data received");
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     bot.sendMessage(msg.chat.id, "Error fetching results");
   }
 });
@@ -149,7 +149,7 @@ bot.onText(/\/sgpa (.+)/, async (msg, match) => {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
   }
 
-  console.log(roll);
+//   console.log(roll);
   try {
     const response = await axios.post(
       `https://results.bput.ac.in/student-results-sgpa?rollNo=${roll}&semid=6&session=Even%20(2023-24)`
@@ -181,7 +181,7 @@ app.get("/get-data", async (req, res) => {
 
   //   });
 
-  console.log(results);
+//   console.log(results);
 
   res.send(results);
 });
@@ -195,7 +195,7 @@ app.get("/get-data/:roll", async (req, res) => {
     const response_subject = await axios.post(
       `https://results.bput.ac.in/student-results-subjects-list?semid=6&rollNo=${roll}&session=Even%20(2023-24)`
     );
-    console.log(response_subject.data);
+    // console.log(response_subject.data);
     // const response_details = await axios.get(
     //   `https://results.bput.ac.in/student-detsils-results?rollNo=${roll}`
     // );
