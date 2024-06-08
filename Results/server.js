@@ -10,7 +10,16 @@ dotenv.config();
 app.use(cors());
 app.use(bodyParser.json());
 
-const bot = new TelegramBot(process.env.TELEGRAM_BOT_KEY, { polling: true });
+const bot = new TelegramBot(process.env.TELEGRAM_BOT_KEY);
+
+bot.setWebHook(
+  `https://fetch-marks.onrender.com${process.env.TELEGRAM_BOT_KEY}`
+);
+
+app.post(process.env.TELEGRAM_BOT_KEY, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
 
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(
@@ -51,7 +60,7 @@ bot.onText(/\/studentinfo (.+)/, async (msg, match) => {
   } else if (!roll.match(/^[0-9]+$/)) {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
   }
-//   console.log(roll);
+  //   console.log(roll);
   try {
     const response = await axios.post(
       `https://results.bput.ac.in/student-detsils-results?rollNo=${roll}`
@@ -88,7 +97,7 @@ bot.onText(/\/subjects (.+)/, async (msg, match) => {
   } else if (!roll.match(/^[0-9]+$/)) {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
   }
-//   console.log(roll);
+  //   console.log(roll);
   try {
     const response = await axios.post(
       `https://results.bput.ac.in/student-results-subjects-list?semid=6&rollNo=${roll}&session=Even%20(2023-24)`
@@ -118,7 +127,7 @@ bot.onText(/\/marks (.+)/, async (msg, match) => {
   } else if (!roll.match(/^[0-9]+$/)) {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
   }
-//   console.log(roll);
+  //   console.log(roll);
   try {
     const response = await axios.post(
       `https://results.bput.ac.in/student-results-subjects-list?semid=6&rollNo=${roll}&session=Even%20(2023-24)`
@@ -149,7 +158,7 @@ bot.onText(/\/sgpa (.+)/, async (msg, match) => {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
   }
 
-//   console.log(roll);
+  //   console.log(roll);
   try {
     const response = await axios.post(
       `https://results.bput.ac.in/student-results-sgpa?rollNo=${roll}&semid=6&session=Even%20(2023-24)`
@@ -181,7 +190,7 @@ app.get("/get-data", async (req, res) => {
 
   //   });
 
-//   console.log(results);
+  //   console.log(results);
 
   res.send(results);
 });
