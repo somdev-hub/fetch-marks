@@ -13,10 +13,10 @@ app.use(bodyParser.json());
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_KEY);
 
 bot.setWebHook(
-  `https://fetch-marks.onrender.com${process.env.TELEGRAM_BOT_KEY}`
+  `https://fetch-marks.onrender.com/${process.env.TELEGRAM_BOT_KEY}`
 );
 
-app.post(process.env.TELEGRAM_BOT_KEY, (req, res) => {
+app.post(`/${process.env.TELEGRAM_BOT_KEY}`, (req, res) => {
   bot.processUpdate(req.body);
   res.sendStatus(200);
 });
