@@ -28,6 +28,10 @@ bot.onText(/\/start/, (msg) => {
   );
 });
 
+bot.on("message", (msg) => {
+  bot.sendMessage(msg.chat.id, "Invalid Command");
+});
+
 const std_rolls = [
   "2101341001",
   //   "2101341002",
