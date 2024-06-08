@@ -28,7 +28,18 @@ bot.onText(/\/start/, (msg) => {
   );
 });
 
+/**
+ * send invalid command message except for commands
+ * - /start
+ * - /studentinfo
+ * - /subjects
+ * - /marks
+ * - /sgpa
+ */
+
 bot.on("message", (msg) => {
+  if (msg.text.match(/\/start|\/studentinfo|\/subjects|\/marks|\/sgpa/)) return;
+
   bot.sendMessage(msg.chat.id, "Invalid Command");
 });
 
