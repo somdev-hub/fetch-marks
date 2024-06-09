@@ -40,7 +40,7 @@ bot.onText(/\/start/, (msg) => {
 bot.on("message", (msg) => {
   if (
     msg.text.match(
-      /\/start|\/studentinfo|\/subjects|\/marks|\/sgpa|\/results|\/help/
+      /\/start|\/studentinfo|\/subjects|\/marks|\/sgpa|\/results|\/help|\/cgpa/
     )
   )
     return;
@@ -183,6 +183,40 @@ bot.onText(/\/sgpa (.+)/, async (msg, match) => {
   }
 });
 
+bot.onText(/\/cgpa (.+)/, async (msg, match) => {
+  const roll = match[1];
+  // console.log(roll);
+  if (roll.length !== 10) {
+    return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
+  } else if (!roll.match(/^[0-9]+$/)) {
+    return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
+  }
+
+  //   console.log(roll);
+  try {
+    const sem1 = await axios.post(
+      `https://results.bput.ac.in/student-results-sgpa?rollNo=${roll}&semid=5&session=Odd%20(2023-24)`
+    );
+    // console.log(sem1.data);
+    const sem2 = await axios.post(
+      `https://results.bput.ac.in/student-results-sgpa?rollNo=${roll}&semid=6&session=Even%20(2023-24)`
+    );
+    // console.log(sem2.data);
+
+    if (sem1.data && sem2.data) {
+      const cgpa =
+        (parseFloat(sem1.data.sgpa) + parseFloat(sem2.data.sgpa)) / 2;
+      const message = `CGPA: ${cgpa}`;
+      bot.sendMessage(msg.chat.id, message);
+    } else {
+      bot.sendMessage(msg.chat.id, "No data received");
+    }
+  } catch (error) {
+    console.log(error);
+    bot.sendMessage(msg.chat.id, "Error fetching results");
+  }
+});
+
 bot.onText(/\/help/, (msg) => {
   const message =
     "/start - Start the bot\n" +
@@ -190,6 +224,7 @@ bot.onText(/\/help/, (msg) => {
     "/subjects <roll> - Get subject list\n" +
     "/marks <roll> - Get marks\n" +
     "/sgpa <roll> - Get SGPA\n" +
+    "/results <roll> <sem> - Get results\n" +
     "/help - Get help";
   bot.sendMessage(msg.chat.id, message);
 });
@@ -213,13 +248,19 @@ function wordWrap(str, maxLength) {
     .trim();
 }
 
-bot.onText(/\/results (.+)/, async (msg, match) => {
+const getResults = async (roll, sem, session) => {};
+
+bot.onText(/\/results (.+) (.+)/, async (msg, match) => {
   const roll = match[1];
+  const sem = match[2];
+  // console.log(roll, sem);
   // console.log(roll);
-  if (roll.length !== 10) {
-    return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
+  if (roll.length !== 10 || sem.length !== 1) {
+    return bot.sendMessage(msg.chat.id, "Invalid Roll Number or Semester");
   } else if (!roll.match(/^[0-9]+$/)) {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
+  } else if (!sem.match(/^[0-9]+$/)) {
+    return bot.sendMessage(msg.chat.id, "Invalid Semester");
   }
 
   try {
@@ -227,10 +268,14 @@ bot.onText(/\/results (.+)/, async (msg, match) => {
       `https://results.bput.ac.in/student-detsils-results?rollNo=${roll}`
     );
     const response_sgpa = await axios.post(
-      `https://results.bput.ac.in/student-results-sgpa?rollNo=${roll}&semid=6&session=Even%20(2023-24)`
+      `https://results.bput.ac.in/student-results-sgpa?rollNo=${roll}&semid=${sem}&session=${
+        sem == 6 ? "Even" : "Odd"
+      }%20(2023-24)`
     );
     const response_subject = await axios.post(
-      `https://results.bput.ac.in/student-results-subjects-list?semid=6&rollNo=${roll}&session=Even%20(2023-24)`
+      `https://results.bput.ac.in/student-results-subjects-list?semid=${sem}&rollNo=${roll}&session=${
+        sem == 6 ? "Even" : "Odd"
+      }%20(2023-24)`
     );
 
     if (response_sgpa.data && response_subject.data && student_details.data) {
@@ -244,17 +289,21 @@ bot.onText(/\/results (.+)/, async (msg, match) => {
       };
       const sgpa = response_sgpa.data.sgpa;
       const subjects = response_subject.data.map((sub, index) => {
-  const lines = wordWrap(sub.subjectName, 27).split("\n");
-  return lines
-    .map((line, i) => {
-      if (i === 0) { // If it's the first line, add the serial number
-        return `${(index + 1).toString().padStart(2, " ")}. ${line.padEnd(36, " ")}: ${sub.grade}`;
-      } else {
-        return `     ${line}`; // For other lines, add spaces for alignment
-      }
-    })
-    .join("\n");
-});
+        const lines = wordWrap(sub.subjectName, 27).split("\n");
+        return lines
+          .map((line, i) => {
+            if (i === 0) {
+              // If it's the first line, add the serial number
+              return `${(index + 1).toString().padStart(2, " ")}. ${line.padEnd(
+                34,
+                " "
+              )}: ${sub.grade}`;
+            } else {
+              return `    ${line}`; // For other lines, add spaces for alignment
+            }
+          })
+          .join("\n");
+      });
       const message =
         `<b>Student Details</b>\n` +
         `<i>Name:</i> ${studentDetail.name}\n` +
@@ -264,7 +313,7 @@ bot.onText(/\/results (.+)/, async (msg, match) => {
         `<i>Batch:</i> ${studentDetail.Batch}\n` +
         `<i>Course:</i> ${studentDetail.Course}\n` +
         `\n` +
-        `<b>Subject Grades</b>\n` +
+        `<b>Subject Grades(${sem} semester)</b>\n` +
         `<pre>${subjects.join("\n")}</pre>` +
         `\n\n` +
         `<b>Total SGPA</b>: ${sgpa}`;
