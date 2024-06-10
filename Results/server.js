@@ -212,6 +212,7 @@ bot.onText(/\/help/, (msg) => {
     "/marks <roll> - Get marks\n" +
     "/sgpa <roll> - Get SGPA\n" +
     "/results <roll> <sem> - Get results\n" +
+    "/oldresults <roll> - Get results from old website for sessions before(2023-24)\n" +
     "/help - Get help";
   bot.sendMessage(msg.chat.id, message);
 });
