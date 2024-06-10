@@ -4,17 +4,24 @@ const cors = require("cors");
 const axios = require("axios");
 const TelegramBot = require("node-telegram-bot-api");
 const dotenv = require("dotenv");
+const getOutput = require("./scrape");
+const resultController = require("./controllers/resultsController");
+const bot = require("./telegram");
+const {
+  oldResultController,
+  getOldResultsController,
+} = require("./controllers/oldResultsController");
 
 const app = express();
 dotenv.config();
 app.use(cors());
 app.use(bodyParser.json());
 
-const bot = new TelegramBot(process.env.TELEGRAM_BOT_KEY);
+// const bot = new TelegramBot(process.env.TELEGRAM_BOT_KEY, { polling: true });
 
-bot.setWebHook(
-  `https://fetch-marks.onrender.com/${process.env.TELEGRAM_BOT_KEY}`
-);
+// bot.setWebHook(
+//   `https://fetch-marks.onrender.com/${process.env.TELEGRAM_BOT_KEY}`
+// );
 
 app.post(`/${process.env.TELEGRAM_BOT_KEY}`, (req, res) => {
   bot.processUpdate(req.body);
@@ -28,36 +35,16 @@ bot.onText(/\/start/, (msg) => {
   );
 });
 
-/**
- * send invalid command message except for commands
- * - /start
- * - /studentinfo
- * - /subjects
- * - /marks
- * - /sgpa
- */
-
 bot.on("message", (msg) => {
   if (
     msg.text.match(
-      /\/start|\/studentinfo|\/subjects|\/marks|\/sgpa|\/results|\/help|\/cgpa/
+      /\/start|\/studentinfo|\/subjects|\/marks|\/sgpa|\/results|\/help|\/oldresults|\/cgpa/
     )
   )
     return;
 
   bot.sendMessage(msg.chat.id, "Invalid Command");
 });
-
-// const sgpa_url =
-//   "https://results.bput.ac.in/student-results-sgpa?rollNo=2101341021&semid=6&session=Even%20(2023-24)";
-// const subject_url =
-//   "https://results.bput.ac.in/student-results-subjects-list?semid=6&rollNo=2101341021&session=Even%20(2023-24)";
-// const std_details_url =
-//   "https://results.bput.ac.in/student-detsils-results?rollNo=2101341021";
-
-// bot.onText(/\/studentinfo/, async (msg) => {
-
-// });
 
 bot.onText(/\/studentinfo (.+)/, async (msg, match) => {
   const roll = match[1];
@@ -250,83 +237,11 @@ function wordWrap(str, maxLength) {
 
 const getResults = async (roll, sem, session) => {};
 
-bot.onText(/\/results (.+) (.+)/, async (msg, match) => {
-  const roll = match[1];
-  const sem = match[2];
-  // console.log(roll, sem);
-  // console.log(roll);
-  if (roll.length !== 10 || sem.length !== 1) {
-    return bot.sendMessage(msg.chat.id, "Invalid Roll Number or Semester");
-  } else if (!roll.match(/^[0-9]+$/)) {
-    return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
-  } else if (!sem.match(/^[0-9]+$/)) {
-    return bot.sendMessage(msg.chat.id, "Invalid Semester");
-  }
+bot.onText(/\/results (.+) (.+)/, resultController);
 
-  try {
-    const student_details = await axios.post(
-      `https://results.bput.ac.in/student-detsils-results?rollNo=${roll}`
-    );
-    const response_sgpa = await axios.post(
-      `https://results.bput.ac.in/student-results-sgpa?rollNo=${roll}&semid=${sem}&session=${
-        sem == 6 ? "Even" : "Odd"
-      }%20(2023-24)`
-    );
-    const response_subject = await axios.post(
-      `https://results.bput.ac.in/student-results-subjects-list?semid=${sem}&rollNo=${roll}&session=${
-        sem == 6 ? "Even" : "Odd"
-      }%20(2023-24)`
-    );
+bot.onText(/\/oldresults (.+)/, oldResultController);
 
-    if (response_sgpa.data && response_subject.data && student_details.data) {
-      const studentDetail = {
-        name: student_details.data.studentName,
-        RegistrationNumber: student_details.data.rollNo,
-        Branch: student_details.data.branchName,
-        College: student_details.data.collegeName,
-        Batch: student_details.data.batch,
-        Course: student_details.data.courseName,
-      };
-      const sgpa = response_sgpa.data.sgpa;
-      const subjects = response_subject.data.map((sub, index) => {
-        const lines = wordWrap(sub.subjectName, 27).split("\n");
-        return lines
-          .map((line, i) => {
-            if (i === 0) {
-              // If it's the first line, add the serial number
-              return `${(index + 1).toString().padStart(2, " ")}. ${line.padEnd(
-                34,
-                " "
-              )}: ${sub.grade}`;
-            } else {
-              return `    ${line}`; // For other lines, add spaces for alignment
-            }
-          })
-          .join("\n");
-      });
-      const message =
-        `<b>Student Details</b>\n` +
-        `<i>Name:</i> ${studentDetail.name}\n` +
-        `<i>Registration Number:</i> ${studentDetail.RegistrationNumber}\n` +
-        `<i>Branch:</i> ${studentDetail.Branch}\n` +
-        `<i>College:</i> ${studentDetail.College}\n` +
-        `<i>Batch:</i> ${studentDetail.Batch}\n` +
-        `<i>Course:</i> ${studentDetail.Course}\n` +
-        `\n` +
-        `<b>Subject Grades(${sem} semester)</b>\n` +
-        `<pre>${subjects.join("\n")}</pre>` +
-        `\n\n` +
-        `<b>Total SGPA</b>: ${sgpa}`;
-
-      bot.sendMessage(msg.chat.id, message, { parse_mode: "HTML" });
-    } else {
-      bot.sendMessage(msg.chat.id, "No data received");
-    }
-  } catch (error) {
-    console.log(error);
-    bot.sendMessage(msg.chat.id, "Error fetching results");
-  }
-});
+bot.on("callback_query", getOldResultsController);
 
 app.get("/get-data", async (req, res) => {
   const results = await Promise.all(
@@ -359,6 +274,23 @@ app.get("/get-data/:roll", async (req, res) => {
       subject: response_subject.data,
       //   details: response_details.data,
     });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Error");
+  }
+});
+
+app.get("/get-previous/:roll", async (req, res) => {
+  const roll = req.params.roll;
+  try {
+    const response = await getOutput(
+      "http://www.bputexam.in/StudentSection/ResultPublished/StudentResult.aspx",
+      "36",
+      roll,
+      "01-01-2000"
+    );
+    console.log(response);
+    res.status(200).send(response);
   } catch (error) {
     console.log(error);
     res.status(500).send("Error");
