@@ -224,12 +224,6 @@ const getOldResultsController = async (callbackQuery) => {
   const msg = callbackQuery.message;
   const { roll, session } = JSON.parse(callbackQuery.data);
   try {
-    // const sessionCode = sessionMap[roll.slice(0, 2) + sem];
-
-    // if (!sessionCode) {
-    //   return bot.sendMessage(msg.chat.id, "Invalid Roll Number or Semester");
-    // }
-    // console.log(sessionCode);
     const response = await getOutput(
       "http://www.bputexam.in/StudentSection/ResultPublished/StudentResult.aspx",
       session,
