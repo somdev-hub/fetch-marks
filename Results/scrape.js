@@ -8,7 +8,10 @@ const delay = (duration) =>
   new Promise((resolve) => setTimeout(resolve, duration));
 
 const getOutput = async (url, sessionCode, roll, date) => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    executablePath: process.env.CHROME_BIN || null,
+  });
   const page = await browser.newPage();
   await page.goto(url);
 
@@ -30,9 +33,9 @@ const getOutput = async (url, sessionCode, roll, date) => {
 
   await delay(5000);
 
-//   const resultType = await page.evaluate(() => {
-//     return document.querySelector("#lblResultType").innerText;
-//   });
+  //   const resultType = await page.evaluate(() => {
+  //     return document.querySelector("#lblResultType").innerText;
+  //   });
 
   const data = await page.evaluate(() => {
     const tds = Array.from(
