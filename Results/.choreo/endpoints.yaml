@@ -1,0 +1,7 @@
+version: '0.1'
+endpoints:
+  - name: result-maker-api
+    context: /
+    type: REST
+    port: 1980
+    networkVisibility: Public
