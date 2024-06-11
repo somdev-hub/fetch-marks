@@ -13,6 +13,13 @@ const {
 } = require("./controllers/oldResultsController");
 const { getCgpa } = require("./controllers/getCgpaController");
 const { getSgpa } = require("./controllers/getSgpaController");
+const { getStudentInfo } = require("./controllers/getStudentInfo");
+const {
+  getOldResultPdfController,
+  oldPdfResultController,
+} = require("./controllers/oldResultPdfController");
+const handleCallQueryController = require("./controllers/handleCallQueryController");
+const getResultPdfController = require("./controllers/resultsPdfController");
 
 const app = express();
 dotenv.config();
@@ -40,7 +47,7 @@ bot.onText(/\/start/, (msg) => {
 bot.on("message", (msg) => {
   if (
     msg.text.match(
-      /\/start|\/studentinfo|\/subjects|\/marks|\/sgpa|\/results|\/help|\/oldresults|\/cgpa/
+      /\/start|\/studentinfo|\/subjects|\/marks|\/sgpa|\/results|\/help|\/oldresults|\/pdfresults|\/oldpdfresult|\/cgpa/
     )
   )
     return;
@@ -48,102 +55,39 @@ bot.on("message", (msg) => {
   bot.sendMessage(msg.chat.id, "Invalid Command");
 });
 
-bot.onText(/\/studentinfo (.+)/, async (msg, match) => {
-  const roll = match[1];
-  if (roll.length !== 10) {
-    return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
-  } else if (!roll.match(/^[0-9]+$/)) {
-    return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
-  }
-  //   console.log(roll);
-  try {
-    const response = await axios.post(
-      `https://results.bput.ac.in/student-detsils-results?rollNo=${roll}`
-    );
+bot.onText(/\/studentinfo (.+)/, getStudentInfo);
 
-    // console.log(response.data);
+// bot.onText(/\/subjects (.+)/, );
 
-    if (response.data) {
-      const data = response.data;
-      const message =
-        `Roll No: ${data.rollNo}\n` +
-        `Student Name: ${data.studentName}\n` +
-        `Batch: ${data.batch}\n` +
-        `Branch ID: ${data.branchId}\n` +
-        `Branch Name: ${data.branchName}\n` +
-        `Course Name: ${data.courseName}\n` +
-        `College Code: ${data.collegeCode}\n` +
-        `College Name: ${data.collegeName}\n` +
-        `Max Year: ${data.maxYear}`;
-      bot.sendMessage(msg.chat.id, message);
-    } else {
-      bot.sendMessage(msg.chat.id, "No data received");
-    }
-  } catch (error) {
-    console.log(error);
-    bot.sendMessage(msg.chat.id, "Error fetching results");
-  }
-});
+// bot.onText(/\/marks (.+)/, async (msg, match) => {
+//   const roll = match[1];
+//   if (roll.length !== 10) {
+//     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
+//   } else if (!roll.match(/^[0-9]+$/)) {
+//     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
+//   }
+//   //   console.log(roll);
+//   try {
+//     const response = await axios.post(
+//       `https://results.bput.ac.in/student-results-subjects-list?semid=6&rollNo=${roll}&session=Even%20(2023-24)`
+//     );
 
-bot.onText(/\/subjects (.+)/, async (msg, match) => {
-  const roll = match[1];
-  if (roll.length !== 10) {
-    return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
-  } else if (!roll.match(/^[0-9]+$/)) {
-    return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
-  }
-  //   console.log(roll);
-  try {
-    const response = await axios.post(
-      `https://results.bput.ac.in/student-results-subjects-list?semid=6&rollNo=${roll}&session=Even%20(2023-24)`
-    );
+//     // console.log(response.data);
 
-    // console.log(response.data);
-
-    if (response.data) {
-      const data = response.data;
-      const message = `Subjects: \n${data
-        .map((sub) => sub.subjectName)
-        .join("\n")}`;
-      bot.sendMessage(msg.chat.id, message);
-    } else {
-      bot.sendMessage(msg.chat.id, "No data received");
-    }
-  } catch (error) {
-    console.log(error);
-    bot.sendMessage(msg.chat.id, "Error fetching results");
-  }
-});
-
-bot.onText(/\/marks (.+)/, async (msg, match) => {
-  const roll = match[1];
-  if (roll.length !== 10) {
-    return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
-  } else if (!roll.match(/^[0-9]+$/)) {
-    return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
-  }
-  //   console.log(roll);
-  try {
-    const response = await axios.post(
-      `https://results.bput.ac.in/student-results-subjects-list?semid=6&rollNo=${roll}&session=Even%20(2023-24)`
-    );
-
-    // console.log(response.data);
-
-    if (response.data) {
-      const data = response.data;
-      const message = `Subjects: \n${data
-        .map((sub) => `${sub.subjectName}: <b>${sub.grade}</b>`)
-        .join("\n")}`;
-      bot.sendMessage(msg.chat.id, message, { parse_mode: "HTML" });
-    } else {
-      bot.sendMessage(msg.chat.id, "No data received");
-    }
-  } catch (error) {
-    // console.log(error);
-    bot.sendMessage(msg.chat.id, "Error fetching results");
-  }
-});
+//     if (response.data) {
+//       const data = response.data;
+//       const message = `Subjects: \n${data
+//         .map((sub) => `${sub.subjectName}: <b>${sub.grade}</b>`)
+//         .join("\n")}`;
+//       bot.sendMessage(msg.chat.id, message, { parse_mode: "HTML" });
+//     } else {
+//       bot.sendMessage(msg.chat.id, "No data received");
+//     }
+//   } catch (error) {
+//     // console.log(error);
+//     bot.sendMessage(msg.chat.id, "Error fetching results");
+//   }
+// });
 
 bot.onText(/\/sgpa (.+)/, getSgpa);
 
@@ -166,7 +110,11 @@ bot.onText(/\/results (.+) (.+)/, resultController);
 
 bot.onText(/\/oldresults (.+)/, oldResultController);
 
-bot.on("callback_query", getOldResultsController);
+bot.on("callback_query", handleCallQueryController);
+
+bot.onText(/\/oldpdfresults (.+)/, oldPdfResultController);
+
+bot.onText(/\/pdfresults (.+) (.+)/, getResultPdfController);
 
 app.get("/get-data", async (req, res) => {
   const results = await Promise.all(

@@ -18,6 +18,8 @@
     "jquery": "^3.7.1",
     "jsdom": "^24.1.0",
     "node-telegram-bot-api": "^0.66.0",
-    "puppeteer": "^22.10.0"
+    "pdfkit": "^0.15.0",
+    "puppeteer": "^22.10.0",
+    "streamifier": "^0.1.1"
   }
 }

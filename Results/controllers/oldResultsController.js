@@ -2,10 +2,35 @@ const axios = require("axios");
 const bot = require("../telegram");
 const getOutput = require("../scrape");
 
-const sessionMap = {
-  // 213:
-  214: "36",
-};
+const sessions = [
+  { text: "Odd-2013", session: "9" },
+  { text: "Even-2014", session: "10" },
+  { text: "Odd-2014", session: "11" },
+  { text: "Even-2014-15", session: "12" },
+  { text: "Odd-2015-16", session: "13" },
+  { text: "Even-2015-16", session: "14" },
+  { text: "Special-2015-16", session: "15" },
+  { text: "Odd (2016-17)", session: "16" },
+  { text: "Even(2016-17)", session: "17" },
+  { text: "Special(2016-17)", session: "18" },
+  { text: "Odd(2017-18)", session: "19" },
+  { text: "Even(2017-18)", session: "20" },
+  { text: "Special(2017-18)", session: "21" },
+  { text: "Odd (2018-19)", session: "22" },
+  { text: "Even (2018-19)", session: "23" },
+  { text: "Special(2018-19)", session: "24" },
+  { text: "Odd (2019-20)", session: "25" },
+  { text: "Even (2019-20)", session: "26" },
+  { text: "Odd (2020-21)", session: "27" },
+  { text: "Supplementary 2021-22", session: "30" },
+  { text: "Even (2020-21)", session: "28" },
+  { text: "Re-ExamOdd (2021-22)", session: "32" },
+  { text: "Supplementary 2019-20", session: "33" },
+  { text: "Supplementary 2020-21", session: "34" },
+  { text: "Odd (2022-23)", session: "35" },
+  { text: "Even (2022-23)", session: "36" },
+  { text: "Supplementary 2022-23", session: "37" },
+];
 
 function wordWrap(str, maxLength) {
   return str
@@ -38,191 +63,25 @@ const oldResultController = async (msg, match) => {
 
   const options = {
     reply_markup: JSON.stringify({
-      inline_keyboard: [
-        [
-          {
-            text: "Odd-2013",
-            callback_data: JSON.stringify({ roll, session: "9" }),
-          },
-        ],
-        [
-          {
-            text: "Even-2014",
-            callback_data: JSON.stringify({ roll, session: "10" }),
-          },
-        ],
-        [
-          {
-            text: "Odd-2014",
-            callback_data: JSON.stringify({ roll, session: "11" }),
-          },
-        ],
-        [
-          {
-            text: "Even-2014-15",
-            callback_data: JSON.stringify({ roll, session: "12" }),
-          },
-        ],
-        [
-          {
-            text: "Odd-2015-16",
-            callback_data: JSON.stringify({ roll, session: "13" }),
-          },
-        ],
-        [
-          {
-            text: "Even-2015-16",
-            callback_data: JSON.stringify({ roll, session: "14" }),
-          },
-        ],
-        [
-          {
-            text: "Special-2015-16",
-            callback_data: JSON.stringify({ roll, session: "15" }),
-          },
-        ],
-        [
-          {
-            text: "Odd (2016-17)",
-            callback_data: JSON.stringify({ roll, session: "16" }),
-          },
-        ],
-        [
-          {
-            text: "Even(2016-17)",
-            callback_data: JSON.stringify({ roll, session: "17" }),
-          },
-        ],
-        [
-          {
-            text: "Special(2016-17)",
-            callback_data: JSON.stringify({ roll, session: "18" }),
-          },
-        ],
-        [
-          {
-            text: "Odd(2017-18)",
-            callback_data: JSON.stringify({ roll, session: "19" }),
-          },
-        ],
-        [
-          {
-            text: "Even(2017-18)",
-            callback_data: JSON.stringify({ roll, session: "20" }),
-          },
-        ],
-        [
-          {
-            text: "Special(2017-18)",
-            callback_data: JSON.stringify({ roll, session: "21" }),
-          },
-        ],
-        [
-          {
-            text: "Odd (2018-19)",
-            callback_data: JSON.stringify({ roll, session: "22" }),
-          },
-        ],
-        [
-          {
-            text: "Even (2018-19)",
-            callback_data: JSON.stringify({ roll, session: "23" }),
-          },
-        ],
-        [
-          {
-            text: "Special(2018-19)",
-            callback_data: JSON.stringify({ roll, session: "24" }),
-          },
-        ],
-        [
-          {
-            text: "Odd (2019-20)",
-            callback_data: JSON.stringify({ roll, session: "25" }),
-          },
-        ],
-        [
-          {
-            text: "Even (2019-20)",
-            callback_data: JSON.stringify({ roll, session: "26" }),
-          },
-        ],
-        [
-          {
-            text: "Odd (2020-21)",
-            callback_data: JSON.stringify({ roll, session: "27" }),
-          },
-        ],
-        [
-          {
-            text: "Even (2020-21)",
-            callback_data: JSON.stringify({ roll, session: "28" }),
-          },
-        ],
-        [
-          {
-            text: "Odd (2021-22)",
-            callback_data: JSON.stringify({ roll, session: "29" }),
-          },
-        ],
-        [
-          {
-            text: "Supplementary 2021-22",
-            callback_data: JSON.stringify({ roll, session: "30" }),
-          },
-        ],
-        [
-          {
-            text: "Even (2021-22)",
-            callback_data: JSON.stringify({ roll, session: "31" }),
-          },
-        ],
-        [
-          {
-            text: "Re-ExamOdd (2021-22)",
-            callback_data: JSON.stringify({ roll, session: "32" }),
-          },
-        ],
-        [
-          {
-            text: "Supplementary 2019-20",
-            callback_data: JSON.stringify({ roll, session: "33" }),
-          },
-        ],
-        [
-          {
-            text: "Supplementary 2020-21",
-            callback_data: JSON.stringify({ roll, session: "34" }),
-          },
-        ],
-        [
-          {
-            text: "Odd (2022-23)",
-            callback_data: JSON.stringify({ roll, session: "35" }),
-          },
-        ],
-        [
-          {
-            text: "Even (2022-23)",
-            callback_data: JSON.stringify({ roll, session: "36" }),
-          },
-        ],
-        [
-          {
-            text: "Supplementary 2022-23",
-            callback_data: JSON.stringify({ roll, session: "37" }),
-          },
-        ],
-      ],
+      inline_keyboard: sessions.map((session) => [
+        {
+          text: session.text,
+          callback_data: JSON.stringify({
+            roll,
+            session: session.session,
+            action: "getOldResult",
+          }),
+        },
+      ]),
     }),
   };
 
   bot.sendMessage(msg.chat.id, "Please choose:", options);
 };
 
-const getOldResultsController = async (callbackQuery) => {
-  const msg = callbackQuery.message;
-  const { roll, session } = JSON.parse(callbackQuery.data);
+const getOldResultsController = async (msg, roll, session) => {
+  // const msg = callbackQuery.message;
+  // const { roll, session } = JSON.parse(callbackQuery.data);
   try {
     const response = await getOutput(
       "http://www.bputexam.in/StudentSection/ResultPublished/StudentResult.aspx",
