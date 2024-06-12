@@ -13,7 +13,10 @@ const {
   oldPdfResultController,
 } = require("./controllers/oldResultPdfController");
 const handleCallQueryController = require("./controllers/handleCallQueryController");
-const getResultPdfController = require("./controllers/resultsPdfController");
+const {
+  getResultPdfController,
+  selectSessionPDFController,
+} = require("./controllers/resultsPdfController");
 
 const app = express();
 dotenv.config();
@@ -54,7 +57,7 @@ bot.onText(/\/help/, (msg) => {
   const message =
     "/start - Start the bot\n" +
     "/studentinfo <i>roll</i> - Get student information\n" +
-    "/results <i>roll</i> <i>sem</i> - Get results\n" +
+    "/results <i>roll</i> - Get results\n" +
     "/oldresults <i>roll</i> - Get results from old website for sessions before(2023-24)\n" +
     "/pdfresults <i>roll</i> <i>sem</i> - Get results in PDF format\n" +
     "/oldpdfresults <i>roll</i> - Get results in PDF format from old website for sessions before(2023-24)\n" +
@@ -70,7 +73,7 @@ bot.on("callback_query", handleCallQueryController);
 
 bot.onText(/\/oldpdfresults (.+)/, oldPdfResultController);
 
-bot.onText(/\/pdfresults (.+) (.+)/, getResultPdfController);
+bot.onText(/\/pdfresults (.+)/, selectSessionPDFController);
 
 const port = process.env.PORT || 3000;
 

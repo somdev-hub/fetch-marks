@@ -1,46 +1,53 @@
 const axios = require("axios");
 const bot = require("../telegram");
-const fs = require("fs");
 const puppeteer = require("puppeteer");
 const jsdom = require("jsdom");
+const selectSession = require("../utils/selectSession");
+const selectResults = require("../utils/selectResults");
 const { JSDOM } = jsdom;
 const { window } = new JSDOM("");
 const $ = require("jquery")(window);
-const path = require("path");
 
-const sessions = {
-  1: "Odd",
-  2: "Even",
-  3: "Odd",
-  4: "Even",
-  5: "Odd",
-  6: "Even",
-  7: "Odd",
-  8: "Even",
-};
-
-const getResultPdfController = async (msg, match) => {
+const selectSessionPDFController = async (msg, match) => {
   const roll = match[1];
-  const sem = match[2];
-  if (roll.length !== 10 || sem.length !== 1) {
+
+  if (roll.length !== 10) {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number or Semester");
   } else if (!roll.match(/^[0-9]+$/)) {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
-  } else if (!sem.match(/^[0-9]+$/)) {
-    return bot.sendMessage(msg.chat.id, "Invalid Semester");
   }
+
+  const options = selectSession(roll, "GRP");
+
+  bot.sendMessage(msg.chat.id, "Please choose:", options);
+};
+
+const selectResultPDFController = async (msg, roll, session) => {
+  await selectResults(bot, msg, roll, session, "SRP");
+};
+
+const getResultPdfController = async (msg, sem, roll, s) => {
+  // const roll = match[1];
+  // const sem = match[2];
+  // if (roll.length !== 10 || sem.length !== 1) {
+  //   return bot.sendMessage(msg.chat.id, "Invalid Roll Number or Semester");
+  // } else if (!roll.match(/^[0-9]+$/)) {
+  //   return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
+  // } else if (!sem.match(/^[0-9]+$/)) {
+  //   return bot.sendMessage(msg.chat.id, "Invalid Semester");
+  // }
   try {
     const student_details = await axios.post(
       `https://results.bput.ac.in/student-detsils-results?rollNo=${roll}`
     );
     const exam_details = await axios.post(
-      `https://results.bput.ac.in/student-results-list?rollNo=${roll}&dob=2020-02-04&session=${sessions[sem]}%20(2023-24)`
+      `https://results.bput.ac.in/student-results-list?rollNo=${roll}&dob=2020-02-04&session=${s}`
     );
     const response_sgpa = await axios.post(
-      `https://results.bput.ac.in/student-results-sgpa?rollNo=${roll}&semid=${sem}&session=${sessions[sem]}%20(2023-24)`
+      `https://results.bput.ac.in/student-results-sgpa?rollNo=${roll}&semid=${sem}&session=${s}`
     );
     const response_subject = await axios.post(
-      `https://results.bput.ac.in/student-results-subjects-list?semid=${sem}&rollNo=${roll}&session=${sessions[sem]}%20(2023-24)`
+      `https://results.bput.ac.in/student-results-subjects-list?semid=${sem}&rollNo=${roll}&session=${s}`
     );
 
     const subject_data = response_subject?.data;
@@ -461,4 +468,8 @@ const getResultPdfController = async (msg, match) => {
   }
 };
 
-module.exports = getResultPdfController;
+module.exports = {
+  getResultPdfController,
+  selectResultPDFController,
+  selectSessionPDFController,
+};

@@ -1,16 +1,7 @@
 const axios = require("axios");
 const bot = require("../telegram");
-
-const sessions = {
-  1: "Odd",
-  2: "Even",
-  3: "Odd",
-  4: "Even",
-  5: "Odd",
-  6: "Even",
-  7: "Odd",
-  8: "Even",
-};
+const selectSession = require("../utils/selectSession");
+const selectResults = require("../utils/selectResults");
 
 const sessionNames = {
   "Odd (2023-24)": "Odd%20(2023-24)",
@@ -45,72 +36,16 @@ const selectSessionController = async (msg, match) => {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
   }
 
-  const options = {
-    reply_markup: JSON.stringify({
-      inline_keyboard: Object.keys(sessionNames).map((session) => [
-        {
-          text: session,
-          callback_data: JSON.stringify({
-            r: roll,
-            s: sessionNames[session],
-            a: "GR",
-          }),
-        },
-      ]),
-    }),
-  };
+  const options = selectSession(roll, "GR");
 
   bot.sendMessage(msg.chat.id, "Please choose:", options);
 };
 
 const selectResultController = async (msg, roll, session) => {
-  try {
-    const response = await axios.post(
-      `https://results.bput.ac.in/student-results-list?rollNo=${roll}&dob=2020-02-04&session=${session}`
-    );
-
-    const results = response.data;
-
-    if (results?.length > 0) {
-      const options = {
-        reply_markup: JSON.stringify({
-          inline_keyboard: results.map((result) => [
-            {
-              text: `Semester ${result.semId}`,
-              callback_data: JSON.stringify({
-                r: roll,
-                se: result.semId,
-                a: "SR",
-                s: session,
-              }),
-            },
-          ]),
-        }),
-      };
-
-      bot.sendMessage(msg.chat.id, "Please choose:", options);
-    } else {
-      bot.sendMessage(msg.chat.id, "No results found");
-    }
-  } catch (error) {
-    console.log(error);
-    bot.sendMessage(msg.chat.id, "Error fetching results");
-  }
+  await selectResults(bot, msg, roll, session, "SR");
 };
 
 const resultController = async (msg, sem, roll, s) => {
-  // const roll = match[1];
-  // const sem = match[2];
-  // console.log(roll, sem, s);
-
-  // if (roll.length !== 10 || sem.length !== 1) {
-  //   return bot.sendMessage(msg.chat.id, "Invalid Roll Number or Semester");
-  // } else if (!roll.match(/^[0-9]+$/)) {
-  //   return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
-  // } else if (!sem.match(/^[0-9]+$/)) {
-  //   return bot.sendMessage(msg.chat.id, "Invalid Semester");
-  // }
-
   try {
     const student_details = await axios.post(
       `https://results.bput.ac.in/student-detsils-results?rollNo=${roll}`
@@ -139,7 +74,7 @@ const resultController = async (msg, sem, roll, s) => {
             if (i === 0) {
               // If it's the first line, add the serial number
               return `${(index + 1).toString().padStart(2, " ")}. ${line.padEnd(
-                34,
+                32,
                 " "
               )}: ${sub.grade}`;
             } else {

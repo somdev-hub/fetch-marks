@@ -4,6 +4,10 @@ const {
   selectResultController,
   resultController,
 } = require("./resultsController");
+const {
+  selectResultPDFController,
+  getResultPdfController,
+} = require("./resultsPdfController");
 
 const handleCallQueryController = async (callbackQuery) => {
   const msg = callbackQuery.message;
@@ -23,6 +27,15 @@ const handleCallQueryController = async (callbackQuery) => {
       return selectResultController(msg, r, s);
     case "SR":
       return resultController(msg, JSON.parse(callbackQuery.data).se, r, s);
+    case "GRP":
+      return selectResultPDFController(msg, r, s);
+    case "SRP":
+      return getResultPdfController(
+        msg,
+        JSON.parse(callbackQuery.data).se,
+        r,
+        s
+      );
   }
 };
 
