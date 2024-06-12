@@ -185,13 +185,20 @@ const getOldResultPdfController = async (msg, roll, session) => {
 
     const pdfBuffer = await newPage.pdf({ format: "A4" });
 
-    fs.writeFileSync("result.pdf", pdfBuffer);
+    const fileOptions = {
+      // Explicitly specify the file name.
+      filename: "result.pdf",
+      // Explicitly specify the MIME type.
+      contentType: "application/octet-stream",
+    };
 
     bot
-      .sendDocument(msg.chat.id, "result.pdf")
-      .then(() => {
-        fs.unlinkSync("result.pdf");
-      })
+      .sendDocument(
+        msg.chat.id,
+        pdfBuffer,
+        { caption: "Here is your semester result" },
+        fileOptions
+      )
       .catch((err) => {
         console.log(err);
       });

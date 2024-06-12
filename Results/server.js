@@ -1,21 +1,12 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const axios = require("axios");
-const TelegramBot = require("node-telegram-bot-api");
 const dotenv = require("dotenv");
-const getOutput = require("./scrape");
 const resultController = require("./controllers/resultsController");
 const bot = require("./telegram");
-const {
-  oldResultController,
-  getOldResultsController,
-} = require("./controllers/oldResultsController");
-const { getCgpa } = require("./controllers/getCgpaController");
-const { getSgpa } = require("./controllers/getSgpaController");
+const { oldResultController } = require("./controllers/oldResultsController");
 const { getStudentInfo } = require("./controllers/getStudentInfo");
 const {
-  getOldResultPdfController,
   oldPdfResultController,
 } = require("./controllers/oldResultPdfController");
 const handleCallQueryController = require("./controllers/handleCallQueryController");
@@ -40,70 +31,32 @@ app.post(`/${process.env.TELEGRAM_BOT_KEY}`, (req, res) => {
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(
     msg.chat.id,
-    "Welcome! Send me a query and I will fetch the results from the API."
+    "Welcome to ResultMaker telegram bot. I can fetch your results and show it to you and also send you your semester results in PDF format. Get started by typing /help."
   );
 });
 
 bot.on("message", (msg) => {
   if (
     msg.text.match(
-      /\/start|\/studentinfo|\/subjects|\/marks|\/sgpa|\/results|\/help|\/oldresults|\/pdfresults|\/oldpdfresult|\/cgpa/
+      /\/start|\/studentinfo|\/help|\/oldresults|\/results|\/oldpdfresults|\/pdfresults/
     )
   )
     return;
-
   bot.sendMessage(msg.chat.id, "Invalid Command");
 });
 
 bot.onText(/\/studentinfo (.+)/, getStudentInfo);
 
-// bot.onText(/\/subjects (.+)/, );
-
-// bot.onText(/\/marks (.+)/, async (msg, match) => {
-//   const roll = match[1];
-//   if (roll.length !== 10) {
-//     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
-//   } else if (!roll.match(/^[0-9]+$/)) {
-//     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
-//   }
-//   //   console.log(roll);
-//   try {
-//     const response = await axios.post(
-//       `https://results.bput.ac.in/student-results-subjects-list?semid=6&rollNo=${roll}&session=Even%20(2023-24)`
-//     );
-
-//     // console.log(response.data);
-
-//     if (response.data) {
-//       const data = response.data;
-//       const message = `Subjects: \n${data
-//         .map((sub) => `${sub.subjectName}: <b>${sub.grade}</b>`)
-//         .join("\n")}`;
-//       bot.sendMessage(msg.chat.id, message, { parse_mode: "HTML" });
-//     } else {
-//       bot.sendMessage(msg.chat.id, "No data received");
-//     }
-//   } catch (error) {
-//     // console.log(error);
-//     bot.sendMessage(msg.chat.id, "Error fetching results");
-//   }
-// });
-
-bot.onText(/\/sgpa (.+)/, getSgpa);
-
-bot.onText(/\/cgpa (.+)/, getCgpa);
-
 bot.onText(/\/help/, (msg) => {
   const message =
     "/start - Start the bot\n" +
-    "/studentinfo <roll> - Get student information\n" +
-    "/subjects <roll> - Get subject list\n" +
-    "/marks <roll> - Get marks\n" +
-    "/sgpa <roll> - Get SGPA\n" +
-    "/results <roll> <sem> - Get results\n" +
-    "/oldresults <roll> - Get results from old website for sessions before(2023-24)\n" +
+    "/studentinfo <i>roll</i> - Get student information\n" +
+    "/results <i>roll</i> <i>sem</i> - Get results\n" +
+    "/oldresults <i>roll</i> - Get results from old website for sessions before(2023-24)\n" +
+    "/pdfresults <i>roll</i> <i>sem</i> - Get results in PDF format\n" +
+    "/oldpdfresults <i>roll</i> - Get results in PDF format from old website for sessions before(2023-24)\n" +
     "/help - Get help";
-  bot.sendMessage(msg.chat.id, message);
+  bot.sendMessage(msg.chat.id, message, { parse_mode: "HTML" });
 });
 
 bot.onText(/\/results (.+) (.+)/, resultController);
@@ -115,36 +68,6 @@ bot.on("callback_query", handleCallQueryController);
 bot.onText(/\/oldpdfresults (.+)/, oldPdfResultController);
 
 bot.onText(/\/pdfresults (.+) (.+)/, getResultPdfController);
-
-app.get("/get-data", async (req, res) => {
-  const results = await Promise.all(
-    std_rolls.map(async (roll) => {
-      const response = await axios.get(
-        `https://results.bput.ac.in/student-results-sgpa?rollNo=${roll}&semid=6&session=Even%20(2023-24)`
-      );
-      return response.data;
-    })
-  );
-
-  res.send(results);
-});
-
-app.get("/get-previous/:roll", async (req, res) => {
-  const roll = req.params.roll;
-  try {
-    const response = await getOutput(
-      "http://www.bputexam.in/StudentSection/ResultPublished/StudentResult.aspx",
-      "36",
-      roll,
-      "01-01-2000"
-    );
-    console.log(response);
-    res.status(200).send(response);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Error");
-  }
-});
 
 const port = process.env.PORT || 3000;
 

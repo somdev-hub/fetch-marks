@@ -245,15 +245,16 @@ const getResultPdfController = async (msg, match) => {
               </tr>
             </tbody>
           </table>
-          <table style="border-collapse: collapse; width: 100%">
-            <thead style="background-color: #192f46">
+          <table style="border-collapse: collapse; width: 100%;margin-top:1rem;">
+            <thead style="background-color: #192f46;-webkit-print-color-adjust: exact;">
               <tr>
                 <th
                   style="
                     border: 1px solid #eeeeee;
                     padding: 0.5rem;
                     font-size: 10px;
-                    color: #fff;
+                    color: #fff !important;
+                    -webkit-print-color-adjust: exact;
                   "
                 >
                   S.No
@@ -263,7 +264,8 @@ const getResultPdfController = async (msg, match) => {
                     border: 1px solid #eeeeee;
                     padding: 0.5rem;
                     font-size: 10px;
-                    color: #fff;
+                    color: #fff !important;
+                    -webkit-print-color-adjust: exact;
                   "
                 >
                   Subject Code
@@ -273,7 +275,8 @@ const getResultPdfController = async (msg, match) => {
                     border: 1px solid #eeeeee;
                     padding: 0.5rem;
                     font-size: 10px;
-                    color: #fff;
+                    color: #fff !important;
+                    -webkit-print-color-adjust: exact;
                   "
                 >
                   Subject
@@ -283,7 +286,8 @@ const getResultPdfController = async (msg, match) => {
                     border: 1px solid #eeeeee;
                     padding: 0.5rem;
                     font-size: 10px;
-                    color: #fff;
+                    color: #fff !important;
+                    -webkit-print-color-adjust: exact;
                   "
                 >
                   Type
@@ -293,7 +297,8 @@ const getResultPdfController = async (msg, match) => {
                     border: 1px solid #eeeeee;
                     padding: 0.5rem;
                     font-size: 10px;
-                    color: #fff;
+                    color: #fff !important;
+                    -webkit-print-color-adjust: exact;
                   "
                 >
                   Credit
@@ -303,7 +308,8 @@ const getResultPdfController = async (msg, match) => {
                     border: 1px solid #eeeeee;
                     padding: 0.5rem;
                     font-size: 10px;
-                    color: #fff;
+                    color: #fff !important;
+                    -webkit-print-color-adjust: exact;
                   "
                 >
                   Grade
@@ -311,8 +317,9 @@ const getResultPdfController = async (msg, match) => {
               </tr>
             </thead>
             <tbody>
-              ${subject_data?.map((subject, index) => {
-                return `
+              ${subject_data
+                ?.map((subject, index) => {
+                  return `
               <tr>
                 <td
                   style="
@@ -346,6 +353,7 @@ const getResultPdfController = async (msg, match) => {
                     border: 1px solid #eeeeee;
                     padding: 0.5rem;
                     font-size: 10px;
+                    text-align:center;
                   "
                 >
                   ${subject?.subjectTP}
@@ -355,6 +363,7 @@ const getResultPdfController = async (msg, match) => {
                     border: 1px solid #eeeeee;
                     padding: 0.5rem;
                     font-size: 10px;
+                    text-align:center;
                   "
                 >
                   ${subject?.subjectCredits}
@@ -364,13 +373,15 @@ const getResultPdfController = async (msg, match) => {
                     border: 1px solid #eeeeee;
                     padding: 0.5rem;
                     font-size: 10px;
+                    text-align:center;
                   "
                 >
                   ${subject?.grade}
                 </td>
               </tr>
               `;
-              })}
+                })
+                .join("")}
               <tr>
                 <td></td>
                 <td></td>
@@ -381,6 +392,7 @@ const getResultPdfController = async (msg, match) => {
                     border: 1px solid #eeeeee;
                     padding: 0.5rem;
                     font-size: 10px;
+                    text-align:center;
                   "
                 >
                   Total Credits: ${response_sgpa?.data?.cretits}
@@ -390,6 +402,7 @@ const getResultPdfController = async (msg, match) => {
                     border: 1px solid #eeeeee;
                     padding: 0.5rem;
                     font-size: 10px;
+                    text-align:center;
                   "
                 >
                  SGPA : ${response_sgpa?.data?.sgpa}
@@ -420,13 +433,23 @@ const getResultPdfController = async (msg, match) => {
 
     const pdfBuffer = await newPage.pdf({ format: "A4" });
 
-    fs.writeFileSync("result.pdf", pdfBuffer);
+    // fs.writeFileSync("result.pdf", pdfBuffer);
+
+    const fileOptions = {
+      // Explicitly specify the file name.
+      caption: "Here is your semester result",
+      filename: "result.pdf",
+      // Explicitly specify the MIME type.
+      contentType: "application/octet-stream",
+    };
 
     bot
-      .sendDocument(msg.chat.id, "result.pdf")
-      .then(() => {
-        fs.unlinkSync("result.pdf");
-      })
+      .sendDocument(
+        msg.chat.id,
+        pdfBuffer,
+        { caption: "Here is your semester result" },
+        fileOptions
+      )
       .catch((err) => {
         console.log(err);
       });
