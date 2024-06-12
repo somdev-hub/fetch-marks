@@ -2,7 +2,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const resultController = require("./controllers/resultsController");
+const {
+  resultController,
+  selectSessionController,
+} = require("./controllers/resultsController");
 const bot = require("./telegram");
 const { oldResultController } = require("./controllers/oldResultsController");
 const { getStudentInfo } = require("./controllers/getStudentInfo");
@@ -59,7 +62,7 @@ bot.onText(/\/help/, (msg) => {
   bot.sendMessage(msg.chat.id, message, { parse_mode: "HTML" });
 });
 
-bot.onText(/\/results (.+) (.+)/, resultController);
+bot.onText(/\/results (.+)/, selectSessionController);
 
 bot.onText(/\/oldresults (.+)/, oldResultController);
 

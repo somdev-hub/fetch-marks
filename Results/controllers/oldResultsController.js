@@ -2,6 +2,40 @@ const axios = require("axios");
 const bot = require("../telegram");
 const getOutput = require("../scrape");
 
+/**<select name="ddlSession" id="ddlSession" class="form-control is-valid" style="width:200px;">
+			<option value="0">Select Exam Session</option>
+			<option value="9">Odd-2013</option>
+			<option value="10">Even-2014</option>
+			<option value="11">Odd-2014</option>
+			<option value="12">Even-2014-15</option>
+			<option value="13">Odd-2015-16</option>
+			<option value="14">Even-2015-16</option>
+			<option value="15">Special-2015-16</option>
+			<option value="16">Odd (2016-17)</option>
+			<option value="17">Even(2016-17)</option>
+			<option value="18">Special(2016-17)</option>
+			<option value="19">Odd(2017-18)</option>
+			<option value="20">Even(2017-18)</option>
+			<option value="21">Special(2017-18)</option>
+			<option value="22">Odd (2018-19)</option>
+			<option value="23">Even (2018-19)</option>
+			<option value="24">Special(2018-19)</option>
+			<option value="25">Odd (2019-20)</option>
+			<option value="26">Even (2019-20)</option>
+			<option value="27">Odd (2020-21)</option>
+			<option value="28">Even (2020-21)</option>
+			<option value="29">Odd (2021-22)</option>
+			<option value="30">Supplementary 2021-22</option>
+			<option value="31">Even (2021-22)</option>
+			<option value="32">Re-ExamOdd (2021-22)</option>
+			<option value="33">Supplementary 2019-20</option>
+			<option value="34">Supplementary 2020-21</option>
+			<option value="35">Odd (2022-23)</option>
+			<option value="36">Even (2022-23)</option>
+			<option value="37">Supplementary 2022-23</option>
+
+		</select>**/
+
 const sessions = [
   { text: "Odd-2013", session: "9" },
   { text: "Even-2014", session: "10" },
@@ -22,8 +56,10 @@ const sessions = [
   { text: "Odd (2019-20)", session: "25" },
   { text: "Even (2019-20)", session: "26" },
   { text: "Odd (2020-21)", session: "27" },
-  { text: "Supplementary 2021-22", session: "30" },
   { text: "Even (2020-21)", session: "28" },
+  { text: "Odd (2021-22)", session: "29" },
+  { text: "Supplementary 2021-22", session: "30" },
+  { text: "Even (2021-22)", session: "31" },
   { text: "Re-ExamOdd (2021-22)", session: "32" },
   { text: "Supplementary 2019-20", session: "33" },
   { text: "Supplementary 2020-21", session: "34" },
@@ -67,9 +103,9 @@ const oldResultController = async (msg, match) => {
         {
           text: session.text,
           callback_data: JSON.stringify({
-            roll,
-            session: session.session,
-            action: "getOldResult",
+            r: roll,
+            s: session.session,
+            a: "GOR",
           }),
         },
       ]),

@@ -12,6 +12,11 @@ const sessions = {
   8: "Even",
 };
 
+const sessionNames = {
+  "Odd (2023-24)": "Odd%20(2023-24)",
+  "Even (2023-24)": "Even%20(2023-24)",
+};
+
 function wordWrap(str, maxLength) {
   return str
     .split(" ")
@@ -31,27 +36,90 @@ function wordWrap(str, maxLength) {
     .trim();
 }
 
-const resultController = async (msg, match) => {
+const selectSessionController = async (msg, match) => {
   const roll = match[1];
-  const sem = match[2];
 
-  if (roll.length !== 10 || sem.length !== 1) {
+  if (roll.length !== 10) {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number or Semester");
   } else if (!roll.match(/^[0-9]+$/)) {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
-  } else if (!sem.match(/^[0-9]+$/)) {
-    return bot.sendMessage(msg.chat.id, "Invalid Semester");
   }
+
+  const options = {
+    reply_markup: JSON.stringify({
+      inline_keyboard: Object.keys(sessionNames).map((session) => [
+        {
+          text: session,
+          callback_data: JSON.stringify({
+            r: roll,
+            s: sessionNames[session],
+            a: "GR",
+          }),
+        },
+      ]),
+    }),
+  };
+
+  bot.sendMessage(msg.chat.id, "Please choose:", options);
+};
+
+const selectResultController = async (msg, roll, session) => {
+  try {
+    const response = await axios.post(
+      `https://results.bput.ac.in/student-results-list?rollNo=${roll}&dob=2020-02-04&session=${session}`
+    );
+
+    const results = response.data;
+
+    if (results?.length > 0) {
+      const options = {
+        reply_markup: JSON.stringify({
+          inline_keyboard: results.map((result) => [
+            {
+              text: `Semester ${result.semId}`,
+              callback_data: JSON.stringify({
+                r: roll,
+                se: result.semId,
+                a: "SR",
+                s: session,
+              }),
+            },
+          ]),
+        }),
+      };
+
+      bot.sendMessage(msg.chat.id, "Please choose:", options);
+    } else {
+      bot.sendMessage(msg.chat.id, "No results found");
+    }
+  } catch (error) {
+    console.log(error);
+    bot.sendMessage(msg.chat.id, "Error fetching results");
+  }
+};
+
+const resultController = async (msg, sem, roll, s) => {
+  // const roll = match[1];
+  // const sem = match[2];
+  // console.log(roll, sem, s);
+
+  // if (roll.length !== 10 || sem.length !== 1) {
+  //   return bot.sendMessage(msg.chat.id, "Invalid Roll Number or Semester");
+  // } else if (!roll.match(/^[0-9]+$/)) {
+  //   return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
+  // } else if (!sem.match(/^[0-9]+$/)) {
+  //   return bot.sendMessage(msg.chat.id, "Invalid Semester");
+  // }
 
   try {
     const student_details = await axios.post(
       `https://results.bput.ac.in/student-detsils-results?rollNo=${roll}`
     );
     const response_sgpa = await axios.post(
-      `https://results.bput.ac.in/student-results-sgpa?rollNo=${roll}&semid=${sem}&session=${sessions[sem]}%20(2023-24)`
+      `https://results.bput.ac.in/student-results-sgpa?rollNo=${roll}&semid=${sem}&session=${s}`
     );
     const response_subject = await axios.post(
-      `https://results.bput.ac.in/student-results-subjects-list?semid=${sem}&rollNo=${roll}&session=${sessions[sem]}%20(2023-24)`
+      `https://results.bput.ac.in/student-results-subjects-list?semid=${sem}&rollNo=${roll}&session=${s}`
     );
 
     if (response_sgpa.data && response_subject.data && student_details.data) {
@@ -104,4 +172,8 @@ const resultController = async (msg, match) => {
   }
 };
 
-module.exports = resultController;
+module.exports = {
+  selectSessionController,
+  selectResultController,
+  resultController,
+};

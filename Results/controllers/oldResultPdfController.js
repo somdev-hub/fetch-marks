@@ -57,9 +57,9 @@ const oldPdfResultController = async (msg, match) => {
         {
           text: session.text,
           callback_data: JSON.stringify({
-            roll,
-            session: session.session,
-            action: "getOldPdfResult",
+            r: roll,
+            s: session.session,
+            a: "GOPR",
           }),
         },
       ]),
