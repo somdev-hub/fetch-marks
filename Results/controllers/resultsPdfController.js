@@ -333,6 +333,7 @@ const getResultPdfController = async (msg, sem, roll, s) => {
                     border: 1px solid #eeeeee;
                     padding: 0.5rem;
                     font-size: 10px;
+                    text-align:center;
                   "
                 >
                   ${index + 1}
