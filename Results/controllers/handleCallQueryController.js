@@ -1,4 +1,7 @@
-const { getOldResultsController } = require("./oldResultsController");
+const {
+  getOldResultsController,
+  selectOldResultsController,
+} = require("./oldResultsController");
 const { getOldResultPdfController } = require("./oldResultPdfController");
 const {
   selectResultController,
@@ -19,8 +22,15 @@ const handleCallQueryController = async (callbackQuery) => {
   // console.log(roll, session, action);
 
   switch (a) {
+    case "GORS":
+      return selectOldResultsController(msg, r, s);
     case "GOR":
-      return getOldResultsController(msg, r, s);
+      return getOldResultsController(
+        msg,
+        JSON.parse(callbackQuery.data).t,
+        r,
+        s
+      );
     case "GOPR":
       return getOldResultPdfController(msg, r, s);
     case "GR":

@@ -1,7 +1,5 @@
 const axios = require("axios");
 const bot = require("../telegram");
-const fs = require("fs");
-const PDFDocument = require("pdfkit");
 const puppeteer = require("puppeteer");
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
@@ -33,8 +31,10 @@ const oldPdfResultController = async (msg, match) => {
     { text: "Odd (2019-20)", session: "25" },
     { text: "Even (2019-20)", session: "26" },
     { text: "Odd (2020-21)", session: "27" },
-    { text: "Supplementary 2021-22", session: "30" },
     { text: "Even (2020-21)", session: "28" },
+    { text: "Odd (2021-22)", session: "29" },
+    { text: "Supplementary 2021-22", session: "30" },
+    { text: "Even (2021-22)", session: "31" },
     { text: "Re-ExamOdd (2021-22)", session: "32" },
     { text: "Supplementary 2019-20", session: "33" },
     { text: "Supplementary 2020-21", session: "34" },
@@ -70,8 +70,6 @@ const oldPdfResultController = async (msg, match) => {
 };
 
 const getOldResultPdfController = async (msg, roll, session) => {
-  // console.log("resultPdfController");
-
   try {
     const browser = await puppeteer.launch({
       args: ["--no-sandbox", "--disable-setuid-sandbox"],

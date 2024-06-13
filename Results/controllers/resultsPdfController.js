@@ -102,21 +102,16 @@ const getResultPdfController = async (msg, sem, roll, s) => {
       <div style="margin: 1.5rem">
         <div
           style="
-            border: 1px solid #000;
-            padding: 0.8rem;
+            background-color: #192f46;
+            padding: 0.3rem;
             box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            -webkit-print-color-adjust: exact;
           "
         >
-          <h1
-            style="
-              text-align: center;
-              margin-bottom: 1rem;
-              font-size: 14px;
-              margin: 0;
-            "
-          >
-            BIJU PATNAIK UNIVERSITY OF TECHNOLOGY, ODISHA
-          </h1>
+          <img src="https://results.bput.ac.in/images/name.png" alt="" style="width: 50%;"/>
         </div>
         <div
           style="padding: 0.5rem; margin-top: 1rem; border: 1px solid #eeeeee"

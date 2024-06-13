@@ -1,40 +1,7 @@
 const axios = require("axios");
 const bot = require("../telegram");
-const getOutput = require("../scrape");
-
-/**<select name="ddlSession" id="ddlSession" class="form-control is-valid" style="width:200px;">
-			<option value="0">Select Exam Session</option>
-			<option value="9">Odd-2013</option>
-			<option value="10">Even-2014</option>
-			<option value="11">Odd-2014</option>
-			<option value="12">Even-2014-15</option>
-			<option value="13">Odd-2015-16</option>
-			<option value="14">Even-2015-16</option>
-			<option value="15">Special-2015-16</option>
-			<option value="16">Odd (2016-17)</option>
-			<option value="17">Even(2016-17)</option>
-			<option value="18">Special(2016-17)</option>
-			<option value="19">Odd(2017-18)</option>
-			<option value="20">Even(2017-18)</option>
-			<option value="21">Special(2017-18)</option>
-			<option value="22">Odd (2018-19)</option>
-			<option value="23">Even (2018-19)</option>
-			<option value="24">Special(2018-19)</option>
-			<option value="25">Odd (2019-20)</option>
-			<option value="26">Even (2019-20)</option>
-			<option value="27">Odd (2020-21)</option>
-			<option value="28">Even (2020-21)</option>
-			<option value="29">Odd (2021-22)</option>
-			<option value="30">Supplementary 2021-22</option>
-			<option value="31">Even (2021-22)</option>
-			<option value="32">Re-ExamOdd (2021-22)</option>
-			<option value="33">Supplementary 2019-20</option>
-			<option value="34">Supplementary 2020-21</option>
-			<option value="35">Odd (2022-23)</option>
-			<option value="36">Even (2022-23)</option>
-			<option value="37">Supplementary 2022-23</option>
-
-		</select>**/
+const { getOutput, getResults } = require("../scrape");
+const selectResults = require("../utils/selectResults");
 
 const sessions = [
   { text: "Odd-2013", session: "9" },
@@ -105,7 +72,7 @@ const oldResultController = async (msg, match) => {
           callback_data: JSON.stringify({
             r: roll,
             s: session.session,
-            a: "GOR",
+            a: "GORS",
           }),
         },
       ]),
@@ -115,7 +82,39 @@ const oldResultController = async (msg, match) => {
   bot.sendMessage(msg.chat.id, "Please choose:", options);
 };
 
-const getOldResultsController = async (msg, roll, session) => {
+const selectOldResultsController = async (msg, roll, session) => {
+  try {
+    const response = await getResults(
+      "http://www.bputexam.in/StudentSection/ResultPublished/StudentResult.aspx",
+      session,
+      roll,
+      "01-01-2000"
+    );
+
+    const options = {
+      reply_markup: JSON.stringify({
+        inline_keyboard: Object.keys(response).map((key) => [
+          {
+            text: `Semester- ${key}`,
+            callback_data: JSON.stringify({
+              r: roll,
+              s: session,
+              a: "GOR",
+              t: response[key],
+            }),
+          },
+        ]),
+      }),
+    };
+
+    bot.sendMessage(msg.chat.id, "Please choose:", options);
+  } catch (error) {
+    console.log(error);
+    bot.sendMessage(msg.chat.id, "Error fetching results");
+  }
+};
+
+const getOldResultsController = async (msg, t, roll, session) => {
   // const msg = callbackQuery.message;
   // const { roll, session } = JSON.parse(callbackQuery.data);
   try {
@@ -123,7 +122,8 @@ const getOldResultsController = async (msg, roll, session) => {
       "http://www.bputexam.in/StudentSection/ResultPublished/StudentResult.aspx",
       session,
       roll,
-      "01-01-2000"
+      "01-01-2000",
+      t
     );
 
     const student_details = await axios.post(
@@ -180,4 +180,8 @@ const getOldResultsController = async (msg, roll, session) => {
   }
 };
 
-module.exports = { oldResultController, getOldResultsController };
+module.exports = {
+  oldResultController,
+  selectOldResultsController,
+  getOldResultsController,
+};
