@@ -6,8 +6,8 @@ This bot fetches the results of the students from the university website and sen
 
 1. Fetch the result of a student(from new website for sessions 2023-24 onwards)
 2. Fetch the result of a student(from old website for sessions 2022-23 and before)
-3. Generate report card for any perticular semester of a student(from new website for sessions 2023-24 onwards)
-4. Generate report card for any perticular semester of a student(from old website for sessions 2022-23 and before)
+3. Generate report card for any particular semester of a student(from new website for sessions 2023-24 onwards)
+4. Generate report card for any particular semester of a student(from old website for sessions 2022-23 and before)
 
 **Disclaimer:** This bot does not engage in or promote any form of piracy. It merely retrieves student results from the publicly available government website of BPUT and APIs. We do not have access to any private resources, nor do we interact with the institution's server or database in any unauthorized manner. For more information, please refer to the [BPUT result website](https://results.bput.ac.in/), and old result website [here](https://bputexam.in/studentsection/resultpublished/studentresult.aspx).
 
