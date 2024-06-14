@@ -1,6 +1,5 @@
 const {
   getOldResultsController,
-  selectOldResultsController,
 } = require("./oldResultsController");
 const { getOldResultPdfController } = require("./oldResultPdfController");
 const {
@@ -11,28 +10,31 @@ const {
   selectResultPDFController,
   getResultPdfController,
 } = require("./resultsPdfController");
+const selectOldResults = require("../utils/selectOldResults");
 
 const handleCallQueryController = async (callbackQuery) => {
   const msg = callbackQuery.message;
-  // console.log("handleCallQueryController");
-  // console.log(msg.chat.id);
   const { r, s, a } = JSON.parse(callbackQuery.data);
-
-  // console.log(s);
-  // console.log(roll, session, action);
 
   switch (a) {
     case "GORS":
-      return selectOldResultsController(msg, r, s);
+      return selectOldResults(msg, r, s, JSON.parse(callbackQuery.data).w);
     case "GOR":
-      return getOldResultsController(
-        msg,
-        JSON.parse(callbackQuery.data).t,
-        r,
-        s
-      );
-    case "GOPR":
-      return getOldResultPdfController(msg, r, s);
+      if (JSON.parse(callbackQuery.data).w === "oldResults") {
+        return getOldResultsController(
+          msg,
+          JSON.parse(callbackQuery.data).t,
+          r,
+          s
+        );
+      }else{
+        return getOldResultPdfController(
+          msg,
+          JSON.parse(callbackQuery.data).t,
+          r,
+          s
+        );
+      }
     case "GR":
       return selectResultController(msg, r, s);
     case "SR":

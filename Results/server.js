@@ -17,6 +17,7 @@ const {
   getResultPdfController,
   selectSessionPDFController,
 } = require("./controllers/resultsPdfController");
+const selectOldSession = require("./utils/selectOldSession");
 
 const app = express();
 dotenv.config();
@@ -67,11 +68,15 @@ bot.onText(/\/help/, (msg) => {
 
 bot.onText(/\/results (.+)/, selectSessionController);
 
-bot.onText(/\/oldresults (.+)/, oldResultController);
+bot.onText(/\/oldresults (.+)/, (msg, match) => {
+  selectOldSession(msg, match, "oldResults");
+});
 
 bot.on("callback_query", handleCallQueryController);
 
-bot.onText(/\/oldpdfresults (.+)/, oldPdfResultController);
+bot.onText(/\/oldpdfresults (.+)/, (msg, match) => {
+  selectOldSession(msg, match, "oldPdfResults");
+});
 
 bot.onText(/\/pdfresults (.+)/, selectSessionPDFController);
 

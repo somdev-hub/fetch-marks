@@ -37,7 +37,7 @@ const getResults = async (url, sessionCode, roll, date) => {
     resArr[subjectCode[subjectCode.length - 6]] = i;
   }
 
-  console.log(resArr);
+  // console.log(resArr);
   return resArr;
 };
 
@@ -55,11 +55,6 @@ const getOutput = async (url, sessionCode, roll, date, t) => {
   await page.click("#btnView");
 
   await delay(5000);
-
-  // const rowCount = await page.$$eval(
-  //   "#gvResultSummary tr",
-  //   (rows) => rows.length
-  // );
 
   await page.waitForSelector(`#gvResultSummary_ctl0${t}_lnkViewResult`);
 

@@ -111,7 +111,7 @@ const getResultPdfController = async (msg, sem, roll, s) => {
             -webkit-print-color-adjust: exact;
           "
         >
-          <img src="https://results.bput.ac.in/images/name.png" alt="" style="width: 50%;"/>
+          <img src="https://results.bput.ac.in/images/name.png" alt="" style="width: 40%;"/>
         </div>
         <div
           style="padding: 0.5rem; margin-top: 1rem; border: 1px solid #eeeeee"
@@ -417,7 +417,7 @@ const getResultPdfController = async (msg, sem, roll, s) => {
         <div style="border: 1px solid #a23a32; padding: 0.5rem; border-radius: 3px;margin-top:1rem;">
         ${pInnerHtmlArray
           .map(
-            (p) => ` <p style="color: #a23a32; font-size: 10px">
+            (p) => ` <p style="color: #a23a32; font-size: 10px;margin:7px;">
           ${p}
           </p>`
           )
