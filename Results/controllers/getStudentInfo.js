@@ -13,7 +13,7 @@ const getStudentInfo = async (msg, match) => {
     const response = await axios.post(
       `https://results.bput.ac.in/student-detsils-results?rollNo=${roll}`
     );
-
+// https://results.bput.ac.in/student-detsils-results?rollNo=2101341030
     // console.log(response.data);
 
     if (response.data) {

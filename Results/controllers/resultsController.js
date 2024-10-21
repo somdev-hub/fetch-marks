@@ -4,9 +4,71 @@ const selectSession = require("../utils/selectSession");
 const selectResults = require("../utils/selectResults");
 
 const sessionNames = {
-  "Odd (2023-24)": "Odd%20(2023-24)",
-  "Even (2023-24)": "Even%20(2023-24)",
+  // "Odd (2023-24)": "Odd%20(2023-24)",
+  // "Even (2023-24)": "Even%20(2023-24)",
+
+  "Supplementary 2023-24": "Supplementary-(2023-24)",
+  "Odd (2023-24)": "Odd-(2023-24)",
+  "Even (2023-24)": "Even-(2023-24)",
+  "Supplementary 2022-23": "Supplementary-(2022-23)",
+  "Odd (2022-23)": "Odd-(2022-23)",
+  "Even (2022-23)": "Even-(2022-23)",
+  "Supplementary 2021-22": "Supplementary-(2021-22)",
+  "Re-ExamOdd (2021-22)": "Re-ExamOdd-(2021-22)",
+  "Even (2021-22)": "Even-(2021-22)",
+  "Odd (2021-22)": "Odd-(2021-22)",
+  "Supplementary 2020-21": "Supplementary-(2020-21)",
+  "Even (2020-21)": "Even-(2020-21)",
+  "Odd (2020-21)": "Odd-(2020-21)",
+  "Supplementary 2019-20": "Supplementary-(2019-20)",
+  "Even (2019-20)": "Even-(2019-20)",
+  "Odd (2019-20)": "Odd-(2019-20)",
+  "Special (2018-19)": "Special-(2018-19)",
+  "Even (2018-19)": "Even-(2018-19)",
+  "Odd (2018-19)": "Odd-(2018-19)",
+  "Special (2017-18)": "Special-(2017-18)",
+  "Even (2017-18)": "Even-(2017-18)",
+  "Odd (2017-18)": "Odd-(2017-18)",
+  "Special (2016-17)": "Special-(2016-17)",
+  "Even (2016-17)": "Even-(2016-17)",
+  "Odd (2016-17)": "Odd-(2016-17)",
+  "Special (2015-16)": "Special-(2015-16)",
+  "Even (2015-16)": "Even-(2015-16)",
+  "Odd (2015-16)": "Odd-(2015-16)"
 };
+
+/**
+ * 
+ 
+Supplementary 2023-24
+Even-(2023-24)
+Odd-(2023-24)
+Supplementary 2022-23
+Even-(2022-23)
+Odd-(2022-23)
+Supplementary 2021-22
+Re-ExamOdd (2021-22)
+Even-(2021-22)
+Odd-(2021-22)
+Supplementary 2020-21
+Even-(2020-21)
+Odd-(2020-21)
+Supplementary 2019-20
+Even-(2019-20)
+Odd-(2019-20)
+Special (2018-19)
+Even-(2018-19)
+Odd-(2018-19)
+Special-(2017-18)
+Even-(2017-18)
+Odd-(2017-18)
+Special-(2016-17)
+Even-(2016-17)
+Odd-(2016-17)
+Special-(2015-16)
+Even-(2015-16)
+Odd-(2015-16)
+ */
 
 function wordWrap(str, maxLength) {
   return str
@@ -53,9 +115,12 @@ const resultController = async (msg, sem, roll, s) => {
     const response_sgpa = await axios.post(
       `https://results.bput.ac.in/student-results-sgpa?rollNo=${roll}&semid=${sem}&session=${s}`
     );
+    // https://results.bput.ac.in/student-results-sgpa?rollNo=2101341030&semid=1&session=Odd-(2021-22)
     const response_subject = await axios.post(
       `https://results.bput.ac.in/student-results-subjects-list?semid=${sem}&rollNo=${roll}&session=${s}`
     );
+
+    //https://results.bput.ac.in/student-results-subjects-list?semid=1&rollNo=2101341030&session=Odd-(2021-22)
 
     if (response_sgpa.data && response_subject.data && student_details.data) {
       const studentDetail = {
@@ -64,7 +129,7 @@ const resultController = async (msg, sem, roll, s) => {
         Branch: student_details.data.branchName,
         College: student_details.data.collegeName,
         Batch: student_details.data.batch,
-        Course: student_details.data.courseName,
+        Course: student_details.data.courseName
       };
       const sgpa = response_sgpa.data.sgpa;
       const subjects = response_subject.data.map((sub, index) => {
@@ -110,5 +175,5 @@ const resultController = async (msg, sem, roll, s) => {
 module.exports = {
   selectSessionController,
   selectResultController,
-  resultController,
+  resultController
 };

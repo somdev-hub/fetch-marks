@@ -43,6 +43,7 @@ const getResultPdfController = async (msg, sem, roll, s) => {
     const exam_details = await axios.post(
       `https://results.bput.ac.in/student-results-list?rollNo=${roll}&dob=2020-02-04&session=${s}`
     );
+    // https://results.bput.ac.in/student-results-list?rollNo=2101341030&dob=2003-08-21&session=Odd-(2021-22)
     const response_sgpa = await axios.post(
       `https://results.bput.ac.in/student-results-sgpa?rollNo=${roll}&semid=${sem}&session=${s}`
     );
