@@ -15,6 +15,7 @@ const {
   getResultPdfController,
   selectSessionPDFController,
 } = require("./controllers/resultsPdfController");
+const { handleSyllabusFetch } = require("./controllers/getSyllabusController");
 
 const app = express();
 dotenv.config();
@@ -31,6 +32,8 @@ app.get("/test", (req, res) => {
   res.send("Hello World");
 });
 
+app.post("/syl",handleSyllabusFetch)
+
 app.post(`/${process.env.TELEGRAM_BOT_KEY}`, (req, res) => {
   bot.processUpdate(req.body);
   res.sendStatus(200);
@@ -45,18 +48,12 @@ bot.onText(/\/start/, (msg) => {
         inline_keyboard: [
           [
             {
-              text: "Use @ResultMakerBot",
+              text: "🚀 Use Bot",
               switch_inline_query_current_chat: "",
             },
           ],
         ],
-        keyboard: [
-          [
-            {
-              text: "@ResultMakerBot",
-            },
-          ],
-        ],
+
         resize_keyboard: true,
       },
     }
