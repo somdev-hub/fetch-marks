@@ -39,7 +39,7 @@ app.post(`/${process.env.TELEGRAM_BOT_KEY}`, (req, res) => {
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(
     msg.chat.id,
-    "Welcome to ResultMaker telegram bot. I can fetch your results and show it to you and also send you your semester results in PDF format. Get started by typing /help."
+    "Welcome to ResultMaker telegram bot. I can fetch your results and show it to you and also send you your semester results in PDF format. Get started by typing /help. Or type @ResultMakerBot followed by your registration number to get your results."
   );
 });
 
@@ -59,14 +59,9 @@ bot.onText(/\/studentinfo (.+)/, getStudentInfo);
 
 bot.onText(/\/help/, (msg) => {
   const message =
-    "/start - Start the bot\n" +
-    "/studentinfo <i>roll</i> - Get student information\n" +
-    "/results <i>roll</i> - Get results\n" +
-    "/oldresults <i>roll</i> - Get results from old website for sessions before(2023-24)\n" +
-    "/pdfresults <i>roll</i> <i>sem</i> - Get results in PDF format\n" +
-    "/oldpdfresults <i>roll</i> - Get results in PDF format from old website for sessions before(2023-24)\n" +
-    "/help - Get help";
-  bot.sendMessage(msg.chat.id, message, { parse_mode: "HTML" });
+    "Use this bot to get your BPUT results from offical source. \n\n" +
+    "Use the keyword @ResultMakerBot followed by your registration number to get your results. \n\n" +
+    bot.sendMessage(msg.chat.id, message, { parse_mode: "HTML" });
 });
 
 bot.on("inline_query", handleInlineQuery);
