@@ -88,6 +88,8 @@ const handleInlineQuery = async (query) => {
               a: "SI",
             }),
           },
+        ],
+        [
           {
             text: "View Results",
             callback_data: JSON.stringify({
@@ -96,6 +98,8 @@ const handleInlineQuery = async (query) => {
               a: "GR",
             }),
           },
+        ],
+        [
           {
             text: "Download PDF",
             callback_data: JSON.stringify({

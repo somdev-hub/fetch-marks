@@ -9,7 +9,7 @@ const {
 } = require("./resultsPdfController");
 
 const handleCallQueryController = async (callbackQuery) => {
-  console.log(callbackQuery);
+  // console.log(callbackQuery);
 
   const msg = { chat: { id: callbackQuery.from.id } };
   // console.log("hello");
