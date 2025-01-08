@@ -50,6 +50,14 @@ bot.onText(/\/start/, (msg) => {
             },
           ],
         ],
+        keyboard: [
+          [
+            {
+              text: "@ResultMakerBot",
+            },
+          ],
+        ],
+        resize_keyboard: true,
       },
     }
   );
