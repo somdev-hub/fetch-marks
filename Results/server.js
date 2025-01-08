@@ -39,7 +39,19 @@ app.post(`/${process.env.TELEGRAM_BOT_KEY}`, (req, res) => {
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(
     msg.chat.id,
-    "Welcome to ResultMaker telegram bot. I can fetch your results and show it to you and also send you your semester results in PDF format. Get started by typing /help. Or type @ResultMakerBot followed by your registration number to get your results."
+    "Welcome to ResultMaker telegram bot. I can fetch your results and show it to you and also send you your semester results in PDF format. Get started by typing /help. Or type @ResultMakerBot followed by your registration number to get your results.",
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "Use @ResultMakerBot",
+              switch_inline_query: "",
+            },
+          ],
+        ],
+      },
+    }
   );
 });
 

@@ -33,6 +33,7 @@ const handleCallQueryController = async (callbackQuery) => {
       );
     case "SI":
       return getStudentInfo(msg, r);
+    
   }
 };
 
