@@ -27,6 +27,10 @@ app.use(bodyParser.json());
 //   `https://fetch-marks.onrender.com/${process.env.TELEGRAM_BOT_KEY}`
 // );
 
+app.get("/test", (req, res) => {
+  res.send("Hello World");
+});
+
 app.post(`/${process.env.TELEGRAM_BOT_KEY}`, (req, res) => {
   bot.processUpdate(req.body);
   res.sendStatus(200);
