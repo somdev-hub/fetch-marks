@@ -46,7 +46,7 @@ bot.onText(/\/start/, (msg) => {
           [
             {
               text: "Use @ResultMakerBot",
-              switch_inline_query: "",
+              switch_inline_query_current_chat: "",
             },
           ],
         ],
