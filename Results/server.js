@@ -5,19 +5,16 @@ const dotenv = require("dotenv");
 const {
   resultController,
   selectSessionController,
+  handleInlineQuery,
+  handleCallbackQuery,
 } = require("./controllers/resultsController");
 const bot = require("./telegram");
-const { oldResultController } = require("./controllers/oldResultsController");
 const { getStudentInfo } = require("./controllers/getStudentInfo");
-const {
-  oldPdfResultController,
-} = require("./controllers/oldResultPdfController");
 const handleCallQueryController = require("./controllers/handleCallQueryController");
 const {
   getResultPdfController,
   selectSessionPDFController,
 } = require("./controllers/resultsPdfController");
-const selectOldSession = require("./utils/selectOldSession");
 
 const app = express();
 dotenv.config();
@@ -42,15 +39,17 @@ bot.onText(/\/start/, (msg) => {
   );
 });
 
-bot.on("message", (msg) => {
-  if (
-    msg.text.match(
-      /\/start|\/studentinfo|\/help|\/oldresults|\/results|\/oldpdfresults|\/pdfresults/
-    )
-  )
-    return;
-  bot.sendMessage(msg.chat.id, "Invalid Command");
-});
+// bot.on("message", (msg) => {
+//   if (
+//     msg.text &&
+//     msg.text.match(
+//       /\/start|\/studentinfo|\/help|\/oldresults|\/results|\/oldpdfresults|\/pdfresults/
+//     )
+//   ) {
+//     return;
+//   }
+//   bot.sendMessage(msg.chat.id, "Invalid Command");
+// });
 
 bot.onText(/\/studentinfo (.+)/, getStudentInfo);
 
@@ -66,17 +65,12 @@ bot.onText(/\/help/, (msg) => {
   bot.sendMessage(msg.chat.id, message, { parse_mode: "HTML" });
 });
 
+bot.on("inline_query", handleInlineQuery);
+// bot.on("callback_query", handleCallbackQuery);
+
 bot.onText(/\/results (.+)/, selectSessionController);
 
-bot.onText(/\/oldresults (.+)/, (msg, match) => {
-  selectOldSession(msg, match, "oldResults");
-});
-
 bot.on("callback_query", handleCallQueryController);
-
-bot.onText(/\/oldpdfresults (.+)/, (msg, match) => {
-  selectOldSession(msg, match, "oldPdfResults");
-});
 
 bot.onText(/\/pdfresults (.+)/, selectSessionPDFController);
 

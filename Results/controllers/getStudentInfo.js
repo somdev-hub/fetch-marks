@@ -1,8 +1,8 @@
 const axios = require("axios");
 const bot = require("../telegram");
 
-const getStudentInfo = async (msg, match) => {
-  const roll = match[1];
+const getStudentInfo = async (msg, roll) => {
+  // const roll = match[1];
   if (roll.length !== 10) {
     return bot.sendMessage(msg.chat.id, "Invalid Roll Number");
   } else if (!roll.match(/^[0-9]+$/)) {
@@ -13,7 +13,7 @@ const getStudentInfo = async (msg, match) => {
     const response = await axios.post(
       `https://results.bput.ac.in/student-detsils-results?rollNo=${roll}`
     );
-// https://results.bput.ac.in/student-detsils-results?rollNo=2101341030
+    // https://results.bput.ac.in/student-detsils-results?rollNo=2101341030
     // console.log(response.data);
 
     if (response.data) {

@@ -1,4 +1,5 @@
 const sessionNames = {
+  "Odd (2024-25)": "Odd-(2024-25)",
   "Supplementary 2023-24": "Supplementary-(2023-24)",
   "Odd (2023-24)": "Odd-(2023-24)",
   "Even (2023-24)": "Even-(2023-24)",
