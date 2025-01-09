@@ -32,7 +32,7 @@ app.get("/test", (req, res) => {
   res.send("Hello World");
 });
 
-app.post("/syl",handleSyllabusFetch)
+app.post("/syl", handleSyllabusFetch);
 
 app.post(`/${process.env.TELEGRAM_BOT_KEY}`, (req, res) => {
   bot.processUpdate(req.body);
@@ -75,8 +75,8 @@ bot.onText(/\/studentinfo (.+)/, getStudentInfo);
 bot.onText(/\/help/, (msg) => {
   const message =
     "Use this bot to get your BPUT results from offical source. \n\n" +
-    "Use the keyword @ResultMakerBot followed by your registration number to get your results. \n\n" +
-    bot.sendMessage(msg.chat.id, message, { parse_mode: "HTML" });
+    "Use the keyword @ResultMakerBot followed by your registration number to get your results. \n\n";
+  bot.sendMessage(msg.chat.id, message, { parse_mode: "HTML" });
 });
 
 bot.on("inline_query", handleInlineQuery);
