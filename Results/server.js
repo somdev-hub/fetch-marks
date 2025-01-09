@@ -53,8 +53,6 @@ bot.onText(/\/start/, (msg) => {
             },
           ],
         ],
-
-        resize_keyboard: true,
       },
     }
   );
