@@ -35,3 +35,44 @@ This bot fetches the results of the students from the university website and sen
 <i>Alert again:
 This bot is developed solely for educational purposes and is not intended to be used for any illegal activities. The developer is not responsible for any misuse of the bot.
 </i>
+
+## Development
+
+This bot is developed using the following technologies:
+
+1. Node.js
+2. Express.js
+3. node-telegram-bot-api
+4. Docker
+
+To contribute to this bot and make it better, follow the steps below:
+
+1. Fork this repository.
+2. Clone the repository to your local machine.
+3. Create a new branch.
+4. Make your changes and commit them.
+5. Push the changes to your fork.
+6. Create a pull request with a detailed description of the changes you made.
+
+### To run the server locally
+
+1. Go the the Results directory.
+
+```bash
+cd Results
+```
+
+2. Install the dependencies.
+
+```bash
+npm install
+```
+
+3. Run the server.
+
+```bash
+node server.js
+```
+
+For this to work, you need to have Node.js installed on your machine. If you don't have it, you can download it from [here](https://nodejs.org/en/download/).
+
